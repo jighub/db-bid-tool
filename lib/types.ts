@@ -79,3 +79,32 @@ export interface DiscoveryRun {
   status: 'running' | 'completed' | 'failed'
   error: string | null
 }
+
+export interface HorizonRun {
+  id: string
+  status: 'running' | 'completed' | 'failed'
+  items_found: number
+  error: string | null
+  created_at: string
+}
+
+export interface HorizonItem {
+  id: string
+  run_id: string | null
+  event_name: string
+  governing_body: string
+  governing_body_website: string | null
+  event_type: EventType
+  typical_attendance: number | null
+  estimated_event_year: number | null
+  estimated_bid_window: string | null
+  outreach_by: string | null
+  strategic_fit: string | null
+  key_requirements: string | null
+  assets: AssetTag[]
+  bha_overnight_priority: boolean
+  city_venue_priority: boolean
+  local_club_priority: boolean
+  dismissed: boolean
+  created_at: string
+}

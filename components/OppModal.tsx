@@ -2,37 +2,44 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { ASSET_LABELS, type AssetTag, type EventType, type Opportunity, type Stage } from '@/lib/types'
+import { ASSET_LABELS, type AssetTag, type EventType, type HorizonItem, type Opportunity, type Stage } from '@/lib/types'
 
 interface Props {
   opp?: Opportunity
+  horizonSeed?: HorizonItem
   onClose: () => void
   onSave: () => void
 }
 
 const ASSETS = Object.keys(ASSET_LABELS) as AssetTag[]
 
-export default function OppModal({ opp, onClose, onSave }: Props) {
+export default function OppModal({ opp, horizonSeed, onClose, onSave }: Props) {
   const isEdit = !!opp
 
+  const seedNotes = horizonSeed
+    ? [horizonSeed.strategic_fit, horizonSeed.key_requirements ? `Requirements: ${horizonSeed.key_requirements}` : null]
+        .filter(Boolean)
+        .join('\n\n')
+    : ''
+
   const [form, setForm] = useState({
-    event_name: opp?.event_name ?? '',
-    governing_body: opp?.governing_body ?? '',
-    event_type: (opp?.event_type ?? 'sporting') as EventType,
-    typical_attendance: opp?.typical_attendance?.toString() ?? '',
+    event_name: opp?.event_name ?? horizonSeed?.event_name ?? '',
+    governing_body: opp?.governing_body ?? horizonSeed?.governing_body ?? '',
+    event_type: (opp?.event_type ?? horizonSeed?.event_type ?? 'sporting') as EventType,
+    typical_attendance: opp?.typical_attendance?.toString() ?? horizonSeed?.typical_attendance?.toString() ?? '',
     bid_deadline: opp?.bid_deadline ?? '',
     event_start: opp?.event_start ?? '',
     event_end: opp?.event_end ?? '',
     indoor_capacity_needed: opp?.indoor_capacity_needed?.toString() ?? '',
     accommodation_rooms_needed: opp?.accommodation_rooms_needed?.toString() ?? '',
     outdoor_notes: opp?.outdoor_notes ?? '',
-    url: opp?.url ?? '',
-    notes: opp?.notes ?? '',
+    url: opp?.url ?? horizonSeed?.governing_body_website ?? '',
+    notes: opp?.notes ?? seedNotes,
     stage: (opp?.stage ?? 'prospecting') as Stage,
-    assets: opp?.assets ?? ([] as AssetTag[]),
-    bha_overnight_priority: opp?.bha_overnight_priority ?? false,
-    city_venue_priority: opp?.city_venue_priority ?? false,
-    local_club_priority: opp?.local_club_priority ?? false,
+    assets: opp?.assets ?? horizonSeed?.assets ?? ([] as AssetTag[]),
+    bha_overnight_priority: opp?.bha_overnight_priority ?? horizonSeed?.bha_overnight_priority ?? false,
+    city_venue_priority: opp?.city_venue_priority ?? horizonSeed?.city_venue_priority ?? false,
+    local_club_priority: opp?.local_club_priority ?? horizonSeed?.local_club_priority ?? false,
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')

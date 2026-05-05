@@ -2,15 +2,16 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import type { Opportunity, Stage } from '@/lib/types'
+import type { HorizonItem, Opportunity, Stage } from '@/lib/types'
 import PipelineView from './PipelineView'
 import OpportunitiesTable from './OpportunitiesTable'
 import DiscoveryView from './DiscoveryView'
 import ResourcesView from './ResourcesView'
+import HorizonView from './HorizonView'
 import OppModal from './OppModal'
 import ScorePanel from './ScorePanel'
 
-type Tab = 'pipeline' | 'opportunities' | 'review' | 'resources'
+type Tab = 'pipeline' | 'opportunities' | 'review' | 'horizon' | 'resources'
 
 interface Props {
   initialOpportunities: Opportunity[]
@@ -21,6 +22,7 @@ export default function BidTool({ initialOpportunities }: Props) {
   const [opps, setOpps] = useState<Opportunity[]>(initialOpportunities)
   const [editingOpp, setEditingOpp] = useState<Opportunity | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [horizonSeed, setHorizonSeed] = useState<HorizonItem | null>(null)
   const [scoringOpp, setScoringOpp] = useState<Opportunity | null>(null)
   const [refreshing, setRefreshing] = useState(false)
   const [refreshStatus, setRefreshStatus] = useState('')
@@ -72,6 +74,7 @@ export default function BidTool({ initialOpportunities }: Props) {
     { id: 'pipeline', label: 'Pipeline' },
     { id: 'opportunities', label: 'Opportunities' },
     { id: 'review', label: pendingCount > 0 ? `Pending Review (${pendingCount})` : 'Pending Review' },
+    { id: 'horizon', label: 'Horizon' },
     { id: 'resources', label: 'Resources' },
   ]
 
@@ -153,6 +156,14 @@ export default function BidTool({ initialOpportunities }: Props) {
             onReject={deleteOpp}
           />
         )}
+        {tab === 'horizon' && (
+          <HorizonView
+            onAddToPipeline={item => {
+              setHorizonSeed(item)
+              setShowAddModal(true)
+            }}
+          />
+        )}
         {tab === 'resources' && <ResourcesView />}
       </div>
 
@@ -160,13 +171,16 @@ export default function BidTool({ initialOpportunities }: Props) {
       {(showAddModal || editingOpp) && (
         <OppModal
           opp={editingOpp ?? undefined}
+          horizonSeed={horizonSeed ?? undefined}
           onClose={() => {
             setShowAddModal(false)
             setEditingOpp(null)
+            setHorizonSeed(null)
           }}
           onSave={async () => {
             setShowAddModal(false)
             setEditingOpp(null)
+            setHorizonSeed(null)
             await refreshOpps()
           }}
         />
