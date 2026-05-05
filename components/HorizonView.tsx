@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { ASSET_LABELS, type AssetTag, type HorizonItem } from '@/lib/types'
 
@@ -45,24 +45,53 @@ export default function HorizonView({ onAddToPipeline }: Props) {
     setLoading(false)
   }
 
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
   async function runScan() {
     setScanning(true)
     setScanStatus('Scanning for 2027–2028 opportunities…')
-    try {
-      const res = await fetch('/api/horizon', { method: 'POST' })
-      const json = await res.json()
-      if (res.ok) {
-        setScanStatus(`Found ${json.added} opportunities`)
+
+    const startedAt = new Date().toISOString()
+
+    // Fire and forget — don't await; the connection may drop before the ~20s response
+    fetch('/api/horizon', { method: 'POST' }).catch(() => {})
+
+    // Poll Supabase every 2s until the run completes
+    pollRef.current = setInterval(async () => {
+      const { data } = await supabase
+        .from('bid_horizon_runs')
+        .select('status, items_found')
+        .gte('created_at', startedAt)
+        .neq('status', 'running')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+      if (!data) return // still running
+
+      clearInterval(pollRef.current!)
+      pollRef.current = null
+
+      if (data.status === 'completed') {
+        setScanStatus(`Found ${data.items_found} opportunities`)
         await fetchItems()
       } else {
-        setScanStatus(json.error ?? 'Scan failed')
+        setScanStatus('Scan failed — try again')
       }
-    } catch {
-      setScanStatus('Network error — try again')
-    } finally {
       setScanning(false)
-      setTimeout(() => setScanStatus(''), 8000)
-    }
+      setTimeout(() => setScanStatus(''), 6000)
+    }, 2000)
+
+    // Safety cutoff after 90 seconds
+    setTimeout(() => {
+      if (pollRef.current) {
+        clearInterval(pollRef.current)
+        pollRef.current = null
+        setScanning(false)
+        setScanStatus('Scan is taking longer than expected — refresh to see results')
+        setTimeout(() => setScanStatus(''), 8000)
+      }
+    }, 90000)
   }
 
   async function dismiss(id: string) {
