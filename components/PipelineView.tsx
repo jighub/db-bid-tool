@@ -2,6 +2,7 @@
 
 import { calcTotal, getRecommendation } from '@/lib/scoring'
 import { ASSET_LABELS, STAGE_LABELS, type Opportunity, type Stage } from '@/lib/types'
+import Tooltip, { InfoIcon } from './Tooltip'
 
 const STAGES: Stage[] = ['prospecting', 'in-progress', 'submitted', 'won', 'lost']
 
@@ -21,6 +22,14 @@ const STAGE_TEXT: Record<Stage, string> = {
   lost: '#991b1b',
 }
 
+const STAGE_TOOLTIPS: Record<Stage, string> = {
+  prospecting: 'Early-stage leads — events you\'ve identified as worth pursuing but haven\'t formally engaged on yet.',
+  'in-progress': 'Active bids — you\'re gathering information, building the case, or in dialogue with the governing body.',
+  submitted: 'Bid is formally submitted and awaiting a decision from the governing body.',
+  won: 'Bid accepted — the event is coming to the Battlefords.',
+  lost: 'Bid unsuccessful. Keep the record for future reference and lessons learned.',
+}
+
 const REC_STYLE: Record<string, { bg: string; color: string }> = {
   Pursue: { bg: '#fdb528', color: '#0a3354' },
   Consider: { bg: '#dbeafe', color: '#1e40af' },
@@ -30,12 +39,11 @@ const REC_STYLE: Record<string, { bg: string; color: string }> = {
 interface Props {
   opps: Opportunity[]
   onMoveStage: (id: string, stage: Stage) => void
-  onEdit: (opp: Opportunity) => void
-  onScore: (opp: Opportunity) => void
+  onOpenProfile: (opp: Opportunity) => void
   onDelete: (id: string) => void
 }
 
-export default function PipelineView({ opps, onMoveStage, onEdit, onScore, onDelete }: Props) {
+export default function PipelineView({ opps, onMoveStage, onOpenProfile, onDelete }: Props) {
   const byStage = (stage: Stage) => opps.filter(o => o.stage === stage)
 
   return (
@@ -49,8 +57,11 @@ export default function PipelineView({ opps, onMoveStage, onEdit, onScore, onDel
                 className="flex items-center justify-between px-3 py-2 rounded-t-lg mb-2"
                 style={{ backgroundColor: STAGE_COLORS[stage] }}
               >
-                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: STAGE_TEXT[stage] }}>
+                <span className="text-xs font-semibold uppercase tracking-wider flex items-center" style={{ color: STAGE_TEXT[stage] }}>
                   {STAGE_LABELS[stage]}
+                  <Tooltip text={STAGE_TOOLTIPS[stage]} width="w-56">
+                    <InfoIcon />
+                  </Tooltip>
                 </span>
                 <span
                   className="text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full"
@@ -66,8 +77,7 @@ export default function PipelineView({ opps, onMoveStage, onEdit, onScore, onDel
                     key={opp.id}
                     opp={opp}
                     onMoveStage={onMoveStage}
-                    onEdit={onEdit}
-                    onScore={onScore}
+                    onOpenProfile={onOpenProfile}
                     onDelete={onDelete}
                   />
                 ))}
@@ -88,14 +98,12 @@ export default function PipelineView({ opps, onMoveStage, onEdit, onScore, onDel
 function OppCard({
   opp,
   onMoveStage,
-  onEdit,
-  onScore,
+  onOpenProfile,
   onDelete,
 }: {
   opp: Opportunity
   onMoveStage: (id: string, stage: Stage) => void
-  onEdit: (opp: Opportunity) => void
-  onScore: (opp: Opportunity) => void
+  onOpenProfile: (opp: Opportunity) => void
   onDelete: (id: string) => void
 }) {
   const total = calcTotal(opp.scores, opp.bid_deadline)
@@ -105,7 +113,11 @@ function OppCard({
   const isDemo = opp.notes?.startsWith('[DEMO PLACEHOLDER]') ?? false
 
   return (
-    <div className="bg-white rounded-xl border p-3 text-sm shadow-sm" style={{ borderColor: isDemo ? '#c4b5fd' : '#e2e8f0' }}>
+    <div
+      className="bg-white rounded-xl border p-3 text-sm shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+      style={{ borderColor: isDemo ? '#c4b5fd' : '#e2e8f0' }}
+      onClick={() => onOpenProfile(opp)}
+    >
       <div className="flex items-start justify-between gap-1 mb-1">
         <span className="font-semibold text-slate-800 leading-tight text-xs">{opp.event_name}</span>
         <span
@@ -166,21 +178,7 @@ function OppCard({
       )}
 
       {/* Actions */}
-      <div className="flex gap-1 flex-wrap mt-1">
-        <button
-          onClick={() => onScore(opp)}
-          className="text-xs px-2 py-1 rounded transition-colors hover:opacity-80"
-          style={{ backgroundColor: '#f1f5f9', color: '#475569' }}
-        >
-          Score
-        </button>
-        <button
-          onClick={() => onEdit(opp)}
-          className="text-xs px-2 py-1 rounded transition-colors hover:opacity-80"
-          style={{ backgroundColor: '#f1f5f9', color: '#475569' }}
-        >
-          Edit
-        </button>
+      <div className="flex gap-1 flex-wrap mt-1" onClick={e => e.stopPropagation()}>
         <div className="relative group">
           <button
             className="text-xs px-2 py-1 rounded transition-colors hover:opacity-80"

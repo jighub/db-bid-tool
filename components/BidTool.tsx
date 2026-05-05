@@ -5,13 +5,18 @@ import { supabase } from '@/lib/supabase'
 import type { HorizonItem, Opportunity, Stage } from '@/lib/types'
 import PipelineView from './PipelineView'
 import OpportunitiesTable from './OpportunitiesTable'
-import DiscoveryView from './DiscoveryView'
-import ResourcesView from './ResourcesView'
 import HorizonView from './HorizonView'
 import OppModal from './OppModal'
-import ScorePanel from './ScorePanel'
+import BidProfile from './BidProfile'
+import Tooltip, { InfoIcon } from './Tooltip'
 
-type Tab = 'pipeline' | 'opportunities' | 'review' | 'horizon' | 'resources'
+type Tab = 'pipeline' | 'horizon'
+type PipelineView2 = 'board' | 'list'
+
+const NAV_TOOLTIPS: Record<Tab, string> = {
+  pipeline: 'Your active bids organised by stage — from first look through to won or lost.',
+  horizon: 'Future events 1–2 years out. "For Review" means it\'s time to reach out. "On the Radar" means watch and wait.',
+}
 
 interface Props {
   initialOpportunities: Opportunity[]
@@ -19,11 +24,11 @@ interface Props {
 
 export default function BidTool({ initialOpportunities }: Props) {
   const [tab, setTab] = useState<Tab>('pipeline')
+  const [pipelineView, setPipelineView] = useState<PipelineView2>('board')
   const [opps, setOpps] = useState<Opportunity[]>(initialOpportunities)
-  const [editingOpp, setEditingOpp] = useState<Opportunity | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [horizonSeed, setHorizonSeed] = useState<HorizonItem | null>(null)
-  const [scoringOpp, setScoringOpp] = useState<Opportunity | null>(null)
+  const [profileOpp, setProfileOpp] = useState<Opportunity | null>(null)
   const [refreshing, setRefreshing] = useState(false)
   const [refreshStatus, setRefreshStatus] = useState('')
 
@@ -42,11 +47,10 @@ export default function BidTool({ initialOpportunities }: Props) {
       const res = await fetch('/api/discover', { method: 'POST' })
       const json = await res.json()
       if (res.ok && json.added > 0) {
-        setRefreshStatus(`Found ${json.added} new opportunities — check Pending Review`)
+        setRefreshStatus(`Found ${json.added} new opportunities`)
         await refreshOpps()
-        setTab('review')
       } else if (res.ok) {
-        setRefreshStatus('No new opportunities found this time')
+        setRefreshStatus('No new opportunities found')
       } else {
         setRefreshStatus(json.error ?? 'Refresh failed')
       }
@@ -68,14 +72,9 @@ export default function BidTool({ initialOpportunities }: Props) {
     setOpps(prev => prev.filter(o => o.id !== id))
   }
 
-  const pendingCount = opps.filter(o => !o.is_reviewed && o.source === 'ai_discovery').length
-
   const navItems: { id: Tab; label: string }[] = [
     { id: 'pipeline', label: 'Pipeline' },
-    { id: 'opportunities', label: 'Opportunities' },
-    { id: 'review', label: pendingCount > 0 ? `Pending Review (${pendingCount})` : 'Pending Review' },
     { id: 'horizon', label: 'Horizon' },
-    { id: 'resources', label: 'Resources' },
   ]
 
   return (
@@ -88,7 +87,7 @@ export default function BidTool({ initialOpportunities }: Props) {
               <button
                 key={id}
                 onClick={() => setTab(id)}
-                className="px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+                className="px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap flex items-center"
                 style={
                   tab === id
                     ? { color: '#0a3354', borderBottom: '3px solid #fdb528', fontWeight: 600 }
@@ -96,26 +95,46 @@ export default function BidTool({ initialOpportunities }: Props) {
                 }
               >
                 {label}
+                <Tooltip text={NAV_TOOLTIPS[id]}>
+                  <InfoIcon />
+                </Tooltip>
               </button>
             ))}
           </nav>
+
           <div className="flex items-center gap-2 py-2">
             {refreshStatus && (
               <span className="text-xs text-slate-500 max-w-[200px] truncate">{refreshStatus}</span>
             )}
-            {tab !== 'horizon' && (
-              <button
-                onClick={runRefresh}
-                disabled={refreshing}
-                title="Ask Claude to scan for new bid opportunities"
-                className="text-xs font-semibold px-3 py-1.5 rounded-full transition-opacity hover:opacity-90 disabled:opacity-60 flex items-center gap-1.5"
-                style={{ backgroundColor: '#f1f5f9', color: '#0a3354', border: '1px solid #cbd5e1' }}
-              >
-                <span style={{ display: 'inline-block', animation: refreshing ? 'spin 1s linear infinite' : 'none' }}>
-                  ↻
-                </span>
-                {refreshing ? 'Refreshing…' : 'Refresh Opportunities'}
-              </button>
+            {tab === 'pipeline' && (
+              <>
+                <div className="flex rounded-full overflow-hidden border border-slate-200 text-xs font-semibold">
+                  {(['board', 'list'] as PipelineView2[]).map(v => (
+                    <button
+                      key={v}
+                      onClick={() => setPipelineView(v)}
+                      className="px-3 py-1.5 transition-colors capitalize"
+                      style={
+                        pipelineView === v
+                          ? { backgroundColor: '#0a3354', color: '#fff' }
+                          : { backgroundColor: '#fff', color: '#64748b' }
+                      }
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={runRefresh}
+                  disabled={refreshing}
+                  title="Ask Claude to scan for new bid opportunities"
+                  className="text-xs font-semibold px-3 py-1.5 rounded-full transition-opacity hover:opacity-90 disabled:opacity-60 flex items-center gap-1.5"
+                  style={{ backgroundColor: '#f1f5f9', color: '#0a3354', border: '1px solid #cbd5e1' }}
+                >
+                  <span style={{ display: 'inline-block', animation: refreshing ? 'spin 1s linear infinite' : 'none' }}>↻</span>
+                  {refreshing ? 'Refreshing…' : 'Refresh'}
+                </button>
+              </>
             )}
             <button
               onClick={() => setShowAddModal(true)}
@@ -130,32 +149,20 @@ export default function BidTool({ initialOpportunities }: Props) {
 
       {/* Content */}
       <div className="flex-1 max-w-7xl mx-auto w-full px-4 py-6">
-        {tab === 'pipeline' && (
+        {tab === 'pipeline' && pipelineView === 'board' && (
           <PipelineView
             opps={opps.filter(o => o.is_reviewed)}
             onMoveStage={moveStage}
-            onEdit={opp => setEditingOpp(opp)}
-            onScore={opp => setScoringOpp(opp)}
+            onOpenProfile={opp => setProfileOpp(opp)}
             onDelete={deleteOpp}
           />
         )}
-        {tab === 'opportunities' && (
+        {tab === 'pipeline' && pipelineView === 'list' && (
           <OpportunitiesTable
             opps={opps.filter(o => o.is_reviewed)}
-            onEdit={opp => setEditingOpp(opp)}
-            onScore={opp => setScoringOpp(opp)}
+            onOpenProfile={opp => setProfileOpp(opp)}
             onDelete={deleteOpp}
             onMoveStage={moveStage}
-          />
-        )}
-        {tab === 'review' && (
-          <DiscoveryView
-            opps={opps}
-            onRefresh={refreshOpps}
-            onReview={opp => {
-              setOpps(prev => prev.map(o => (o.id === opp.id ? { ...o, is_reviewed: true } : o)))
-            }}
-            onReject={deleteOpp}
           />
         )}
         {tab === 'horizon' && (
@@ -166,34 +173,39 @@ export default function BidTool({ initialOpportunities }: Props) {
             }}
           />
         )}
-        {tab === 'resources' && <ResourcesView />}
       </div>
 
       {/* Modals */}
-      {(showAddModal || editingOpp) && (
+      {(showAddModal) && (
         <OppModal
-          opp={editingOpp ?? undefined}
           horizonSeed={horizonSeed ?? undefined}
           onClose={() => {
             setShowAddModal(false)
-            setEditingOpp(null)
             setHorizonSeed(null)
           }}
           onSave={async () => {
             setShowAddModal(false)
-            setEditingOpp(null)
             setHorizonSeed(null)
             await refreshOpps()
           }}
         />
       )}
-      {scoringOpp && (
-        <ScorePanel
-          opp={scoringOpp}
-          onClose={() => setScoringOpp(null)}
+
+      {profileOpp && (
+        <BidProfile
+          opp={profileOpp}
+          onClose={() => setProfileOpp(null)}
           onSave={async updated => {
-            setScoringOpp(null)
+            setProfileOpp(updated)
             setOpps(prev => prev.map(o => (o.id === updated.id ? updated : o)))
+          }}
+          onDelete={async id => {
+            setProfileOpp(null)
+            await deleteOpp(id)
+          }}
+          onMoveStage={async (id, stage) => {
+            await moveStage(id, stage)
+            setProfileOpp(prev => prev ? { ...prev, stage } : null)
           }}
         />
       )}

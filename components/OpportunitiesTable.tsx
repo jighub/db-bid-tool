@@ -20,13 +20,12 @@ const STAGE_COLORS: Record<Stage, string> = {
 
 interface Props {
   opps: Opportunity[]
-  onEdit: (opp: Opportunity) => void
-  onScore: (opp: Opportunity) => void
+  onOpenProfile: (opp: Opportunity) => void
   onDelete: (id: string) => void
   onMoveStage: (id: string, stage: Stage) => void
 }
 
-export default function OpportunitiesTable({ opps, onEdit, onScore, onDelete, onMoveStage }: Props) {
+export default function OpportunitiesTable({ opps, onOpenProfile, onDelete, onMoveStage }: Props) {
   const [filterType, setFilterType] = useState<EventType | ''>('')
   const [filterStage, setFilterStage] = useState<Stage | ''>('')
   const [filterAsset, setFilterAsset] = useState<AssetTag | ''>('')
@@ -134,8 +133,9 @@ export default function OpportunitiesTable({ opps, onEdit, onScore, onDelete, on
                 return (
                   <tr
                     key={opp.id}
-                    className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                    className="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer"
                     style={i % 2 === 0 ? {} : { backgroundColor: '#fafbfc' }}
+                    onClick={() => onOpenProfile(opp)}
                   >
                     <td className="px-4 py-3">
                       <div className="font-medium text-slate-800 text-sm">{opp.event_name}</div>
@@ -151,7 +151,7 @@ export default function OpportunitiesTable({ opps, onEdit, onScore, onDelete, on
                         {opp.event_type}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                       <select
                         value={opp.stage}
                         onChange={e => onMoveStage(opp.id, e.target.value as Stage)}
@@ -195,22 +195,8 @@ export default function OpportunitiesTable({ opps, onEdit, onScore, onDelete, on
                         {rec}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                       <div className="flex gap-1">
-                        <button
-                          onClick={() => onScore(opp)}
-                          className="text-xs px-2 py-1 rounded hover:opacity-80"
-                          style={{ backgroundColor: '#f1f5f9', color: '#475569' }}
-                        >
-                          Score
-                        </button>
-                        <button
-                          onClick={() => onEdit(opp)}
-                          className="text-xs px-2 py-1 rounded hover:opacity-80"
-                          style={{ backgroundColor: '#f1f5f9', color: '#475569' }}
-                        >
-                          Edit
-                        </button>
                         {opp.url && (
                           <a
                             href={opp.url}

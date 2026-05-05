@@ -44,6 +44,11 @@ export interface Scores {
   // lead_time is derived, not stored (0–10)
 }
 
+export interface BidDocument {
+  name: string
+  url: string
+}
+
 export interface Opportunity {
   id: string
   event_name: string
@@ -58,6 +63,10 @@ export interface Opportunity {
   outdoor_notes: string | null
   url: string | null
   notes: string | null
+  strategic_fit: string | null
+  key_requirements: string | null
+  outreach_by: string | null
+  documents: BidDocument[]
   stage: Stage
   assets: AssetTag[]
   bha_overnight_priority: boolean

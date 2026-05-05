@@ -123,7 +123,7 @@ export async function POST() {
     const inserts = opportunities.map(opp => ({
       ...opp,
       source: 'ai_discovery',
-      is_reviewed: false,
+      is_reviewed: true,
       discovery_run_id: runId,
       scores: opp.scores ?? {},
     }))
