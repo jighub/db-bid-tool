@@ -3,6 +3,8 @@ import BidTool from '@/components/BidTool'
 import Header from '@/components/Header'
 import type { Opportunity } from '@/lib/types'
 
+export const dynamic = 'force-dynamic'
+
 async function getOpportunities(): Promise<Opportunity[]> {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
