@@ -148,9 +148,6 @@ export default function BidProfile({ opp, onClose, onSave, onDelete, onMoveStage
               <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: recStyle.bg, color: recStyle.color }}>
                 {rec}
               </span>
-              <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: stageStyle.bg, color: stageStyle.color }}>
-                {STAGE_LABELS[form.stage]}
-              </span>
               <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-lg leading-none ml-1">✕</button>
             </div>
           </div>
@@ -330,7 +327,7 @@ export default function BidProfile({ opp, onClose, onSave, onDelete, onMoveStage
                 </span>
               </div>
 
-              {(Object.keys(SCORE_LABELS) as (keyof Scores)[]).map(key => (
+              {(Object.keys(SCORE_LABELS).filter(k => k !== 'lead_time') as (keyof Scores)[]).map(key => (
                 <div key={key}>
                   <div className="flex justify-between text-xs mb-1">
                     <span className="font-semibold text-slate-600">{SCORE_LABELS[key]}</span>

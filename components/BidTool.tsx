@@ -95,7 +95,7 @@ export default function BidTool({ initialOpportunities }: Props) {
                 }
               >
                 {label}
-                <Tooltip text={NAV_TOOLTIPS[id]}>
+                <Tooltip text={NAV_TOOLTIPS[id]} direction="down">
                   <InfoIcon />
                 </Tooltip>
               </button>

@@ -6,10 +6,13 @@ interface Props {
   text: string
   children: React.ReactNode
   width?: string
+  direction?: 'up' | 'down'
 }
 
-export default function Tooltip({ text, children, width = 'w-52' }: Props) {
+export default function Tooltip({ text, children, width = 'w-52', direction = 'up' }: Props) {
   const [show, setShow] = useState(false)
+
+  const isDown = direction === 'down'
 
   return (
     <span
@@ -20,10 +23,10 @@ export default function Tooltip({ text, children, width = 'w-52' }: Props) {
       {children}
       {show && (
         <span
-          className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 ${width} text-xs bg-slate-800 text-white rounded-lg px-3 py-2 z-50 shadow-lg text-center pointer-events-none leading-relaxed`}
+          className={`absolute ${isDown ? 'top-full mt-2' : 'bottom-full mb-2'} left-1/2 -translate-x-1/2 ${width} text-xs bg-slate-800 text-white rounded-lg px-3 py-2 z-50 shadow-lg text-center pointer-events-none leading-relaxed`}
         >
           {text}
-          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
+          <span className={`absolute ${isDown ? 'bottom-full border-b-slate-800 border-t-transparent' : 'top-full border-t-slate-800 border-b-transparent'} left-1/2 -translate-x-1/2 border-4 border-l-transparent border-r-transparent`} />
         </span>
       )}
     </span>
