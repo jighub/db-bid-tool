@@ -103,18 +103,20 @@ export default function BidTool({ initialOpportunities }: Props) {
             {refreshStatus && (
               <span className="text-xs text-slate-500 max-w-[200px] truncate">{refreshStatus}</span>
             )}
-            <button
-              onClick={runRefresh}
-              disabled={refreshing}
-              title="Ask Claude to scan for new bid opportunities"
-              className="text-xs font-semibold px-3 py-1.5 rounded-full transition-opacity hover:opacity-90 disabled:opacity-60 flex items-center gap-1.5"
-              style={{ backgroundColor: '#f1f5f9', color: '#0a3354', border: '1px solid #cbd5e1' }}
-            >
-              <span style={{ display: 'inline-block', animation: refreshing ? 'spin 1s linear infinite' : 'none' }}>
-                ↻
-              </span>
-              {refreshing ? 'Refreshing…' : 'Refresh Opportunities'}
-            </button>
+            {tab !== 'horizon' && (
+              <button
+                onClick={runRefresh}
+                disabled={refreshing}
+                title="Ask Claude to scan for new bid opportunities"
+                className="text-xs font-semibold px-3 py-1.5 rounded-full transition-opacity hover:opacity-90 disabled:opacity-60 flex items-center gap-1.5"
+                style={{ backgroundColor: '#f1f5f9', color: '#0a3354', border: '1px solid #cbd5e1' }}
+              >
+                <span style={{ display: 'inline-block', animation: refreshing ? 'spin 1s linear infinite' : 'none' }}>
+                  ↻
+                </span>
+                {refreshing ? 'Refreshing…' : 'Refresh Opportunities'}
+              </button>
+            )}
             <button
               onClick={() => setShowAddModal(true)}
               className="text-xs font-semibold px-3 py-1.5 rounded-full transition-opacity hover:opacity-90"

@@ -105,7 +105,7 @@ function OppCard({
   const isDemo = opp.notes?.startsWith('[DEMO PLACEHOLDER]') ?? false
 
   return (
-    <div className="bg-white rounded-lg border p-3 text-sm shadow-sm" style={{ borderColor: isDemo ? '#c4b5fd' : '#e2e8f0' }}>
+    <div className="bg-white rounded-xl border p-3 text-sm shadow-sm" style={{ borderColor: isDemo ? '#c4b5fd' : '#e2e8f0' }}>
       <div className="flex items-start justify-between gap-1 mb-1">
         <span className="font-semibold text-slate-800 leading-tight text-xs">{opp.event_name}</span>
         <span

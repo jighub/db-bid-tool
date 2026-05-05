@@ -144,7 +144,7 @@ export default function HorizonView({ onAddToPipeline }: Props) {
           )}
         </div>
         <div className="flex items-center gap-2">
-          {scanStatus && <span className="text-xs text-slate-500 max-w-[200px]">{scanStatus}</span>}
+          {scanStatus && <span className="text-xs text-slate-500 max-w-[200px] truncate">{scanStatus}</span>}
           <button
             onClick={runScan}
             disabled={scanning}
