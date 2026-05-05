@@ -50,7 +50,18 @@ Return ONLY valid JSON — no markdown, no explanation. Format:
   }
 ]
 
-Valid asset tags: innovation_plex, jackfish_lodge, table_mountain, curling_club, disc_golf, archery, snowmobile, aquatic, soccer_fields, golf_course
+ASSET TAGGING RULES — only tag an asset if the event DIRECTLY requires that specific facility as a primary or co-host venue. Do NOT tag based on accommodation needs alone.
+- innovation_plex: event needs a large indoor arena (hockey, basketball, volleyball, trade shows, conventions)
+- curling_club: event is a curling tournament requiring sheets
+- disc_golf: event is a disc golf tournament using the course
+- archery: event is an archery competition using the range
+- snowmobile: event involves snowmobile trails or racing
+- aquatic: event requires a competition swimming pool
+- soccer_fields: event requires outdoor grass fields for soccer/football
+- golf_course: event is a golf tournament using the course
+- table_mountain: event uses the ski hill or outdoor trails (skiing, biking)
+- jackfish_lodge: ONLY tag if the lodge/conference centre is the PRIMARY venue (e.g. a conference or banquet-style event). Do NOT tag just because the event needs hotel rooms — all events need rooms, that does not make Jackfish Lodge a venue.
+
 Valid event_type values: sporting, cultural, conference, other`
 
 export async function POST() {
