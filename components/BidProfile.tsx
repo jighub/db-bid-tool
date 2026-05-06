@@ -384,9 +384,9 @@ function ViewOverview({ form }: { form: Opportunity }) {
           <div className="grid grid-cols-3 gap-2 items-start">
             <dt className="text-xs font-semibold text-slate-500 col-span-1 pt-0.5">Website</dt>
             <dd className="col-span-2">
-              <a href={form.url} target="_blank" rel="noopener noreferrer"
+              <a href={/^https?:\/\//i.test(form.url) ? form.url : `https://${form.url}`} target="_blank" rel="noopener noreferrer"
                 className="text-xs text-[#0a3354] hover:underline font-medium break-all">
-                {form.url.replace(/^https?:\/\//, '')} ↗
+                {form.url.replace(/^https?:\/\//i, '')} ↗
               </a>
             </dd>
           </div>
