@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { ASSET_LABELS, STAGE_LABELS, type AssetTag, type BidDocument, type EventType, type Opportunity, type Scores, type Stage } from '@/lib/types'
 import { calcLeadTime, calcTotal, getRecommendation, SCORE_LABELS, SCORE_MAX } from '@/lib/scoring'
+import { normalizeUrl } from '@/lib/url'
 
 const STAGES: Stage[] = ['prospecting', 'in-progress', 'submitted', 'won', 'lost']
 const ASSETS = Object.keys(ASSET_LABELS) as AssetTag[]
@@ -290,7 +291,7 @@ export default function BidProfile({ opp, onClose, onSave, onDelete, onMoveStage
                 <div className="space-y-2">
                   {form.documents.map((doc, i) => (
                     <div key={i} className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2">
-                      <a href={doc.url} target="_blank" rel="noopener noreferrer"
+                      <a href={normalizeUrl(doc.url)} target="_blank" rel="noopener noreferrer"
                         className="text-xs font-medium text-[#0a3354] hover:underline flex-1 truncate">
                         {doc.name} ↗
                       </a>
@@ -384,7 +385,7 @@ function ViewOverview({ form }: { form: Opportunity }) {
           <div className="grid grid-cols-3 gap-2 items-start">
             <dt className="text-xs font-semibold text-slate-500 col-span-1 pt-0.5">Website</dt>
             <dd className="col-span-2">
-              <a href={/^https?:\/\//i.test(form.url) ? form.url : `https://${form.url}`} target="_blank" rel="noopener noreferrer"
+              <a href={normalizeUrl(form.url)} target="_blank" rel="noopener noreferrer"
                 className="text-xs text-[#0a3354] hover:underline font-medium break-all">
                 {form.url.replace(/^https?:\/\//i, '')} ↗
               </a>

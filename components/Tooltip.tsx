@@ -19,6 +19,7 @@ export default function Tooltip({ text, children, width = 'w-52', direction = 'u
       className="relative inline-flex items-center"
       onMouseEnter={() => setShow(true)}
       onMouseLeave={() => setShow(false)}
+      onClick={e => e.stopPropagation()}
     >
       {children}
       {show && (
@@ -36,8 +37,16 @@ export default function Tooltip({ text, children, width = 'w-52', direction = 'u
 export function InfoIcon() {
   return (
     <span
-      className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full text-[9px] font-bold ml-1 cursor-default select-none"
-      style={{ backgroundColor: '#cbd5e1', color: '#475569' }}
+      className="inline-flex items-center justify-center w-4 h-4 rounded-full ml-1.5 cursor-help select-none shrink-0"
+      style={{
+        backgroundColor: '#cbd5e1',
+        color: '#475569',
+        fontSize: '10px',
+        fontStyle: 'italic',
+        fontWeight: 700,
+        fontFamily: 'Georgia, serif',
+        lineHeight: 1,
+      }}
     >
       i
     </span>

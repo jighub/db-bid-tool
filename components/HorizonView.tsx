@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { ASSET_LABELS, type AssetTag, type HorizonItem } from '@/lib/types'
+import { normalizeUrl } from '@/lib/url'
 
 const PRIORITY_BADGE: { key: keyof HorizonItem; label: string; bg: string; color: string }[] = [
   { key: 'bha_overnight_priority', label: 'Overnight Stay', bg: '#fef9c3', color: '#92400e' },
@@ -329,7 +330,7 @@ function HorizonCard({
 
       <div className="flex gap-2 flex-wrap pt-1 border-t border-slate-100">
         {item.governing_body_website && (
-          <a href={item.governing_body_website} target="_blank" rel="noopener noreferrer"
+          <a href={normalizeUrl(item.governing_body_website)} target="_blank" rel="noopener noreferrer"
             className="text-xs px-2 py-1 rounded hover:opacity-80 transition-opacity"
             style={{ backgroundColor: '#f1f5f9', color: '#0a3354' }}>
             Website ↗

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { calcTotal, getRecommendation } from '@/lib/scoring'
 import { ASSET_LABELS, STAGE_LABELS, type AssetTag, type EventType, type Opportunity, type Stage } from '@/lib/types'
+import { normalizeUrl } from '@/lib/url'
 
 const REC_STYLE: Record<string, { bg: string; color: string }> = {
   Pursue: { bg: '#fdb528', color: '#0a3354' },
@@ -199,7 +200,7 @@ export default function OpportunitiesTable({ opps, onOpenProfile, onDelete, onMo
                       <div className="flex gap-1">
                         {opp.url && (
                           <a
-                            href={opp.url}
+                            href={normalizeUrl(opp.url)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-xs px-2 py-1 rounded hover:opacity-80"
