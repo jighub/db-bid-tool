@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
+import { rootDomain } from '@/lib/url'
 
 const SYSTEM_PROMPT = `You are a strategic event bid researcher for Destination Battlefords, a DMO in North Battleford, Saskatchewan, Canada.
 
@@ -120,7 +121,16 @@ export async function POST() {
       return NextResponse.json({ error: 'Claude returned invalid JSON.', raw }, { status: 500 })
     }
 
-    const inserts = items.map(item => ({ ...item, run_id: runId, dismissed: false }))
+    // Reduce hallucinated AI URL paths to the root domain.
+    const inserts = items.map(item => ({
+      ...item,
+      governing_body_website:
+        typeof item.governing_body_website === 'string'
+          ? rootDomain(item.governing_body_website)
+          : item.governing_body_website,
+      run_id: runId,
+      dismissed: false,
+    }))
 
     const { error: insertError } = await supabase.from('bid_horizon_items').insert(inserts)
     if (insertError) {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
+import { rootDomain } from '@/lib/url'
 
 const SYSTEM_PROMPT = `You are an event bid research assistant for Destination Battlefords, a DMO in Saskatchewan, Canada.
 
@@ -119,9 +120,11 @@ export async function POST() {
       return NextResponse.json({ error: 'Claude returned invalid JSON.', raw }, { status: 500 })
     }
 
-    // Insert each opportunity
+    // Insert each opportunity. AI-generated URL paths are frequently
+    // hallucinated, so reduce any discovered URL to the root domain.
     const inserts = opportunities.map(opp => ({
       ...opp,
+      url: typeof opp.url === 'string' ? rootDomain(opp.url) : opp.url,
       source: 'ai_discovery',
       is_reviewed: true,
       discovery_run_id: runId,

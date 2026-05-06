@@ -37,18 +37,14 @@ export default function Tooltip({ text, children, width = 'w-52', direction = 'u
 export function InfoIcon() {
   return (
     <span
+      aria-label="More info"
       className="inline-flex items-center justify-center w-4 h-4 rounded-full ml-1.5 cursor-help select-none shrink-0"
-      style={{
-        backgroundColor: '#cbd5e1',
-        color: '#475569',
-        fontSize: '10px',
-        fontStyle: 'italic',
-        fontWeight: 700,
-        fontFamily: 'Georgia, serif',
-        lineHeight: 1,
-      }}
+      style={{ backgroundColor: '#0a3354', color: '#ffffff' }}
     >
-      i
+      <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+        <circle cx="8" cy="3.5" r="1.4" />
+        <rect x="6.7" y="6.2" width="2.6" height="7.2" rx="1.1" />
+      </svg>
     </span>
   )
 }
