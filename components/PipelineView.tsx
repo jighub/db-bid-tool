@@ -23,10 +23,10 @@ const STAGE_TEXT: Record<Stage, string> = {
 }
 
 const STAGE_TOOLTIPS: Record<Stage, string> = {
-  prospecting: 'Early-stage leads — events you\'ve identified as worth pursuing but haven\'t formally engaged on yet.',
-  'in-progress': 'Active bids — you\'re gathering information, building the case, or in dialogue with the governing body.',
+  prospecting: 'Early-stage leads - events you\'ve identified as worth pursuing but haven\'t formally engaged on yet.',
+  'in-progress': 'Active bids - you\'re gathering information, building the case, or in dialogue with the governing body.',
   submitted: 'Bid is formally submitted and awaiting a decision from the governing body.',
-  won: 'Bid accepted — the event is coming to the Battlefords.',
+  won: 'Bid accepted - the event is coming to the Battlefords.',
   lost: 'Bid unsuccessful. Keep the record for future reference and lessons learned.',
 }
 

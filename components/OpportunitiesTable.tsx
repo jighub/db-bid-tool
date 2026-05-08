@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { calcTotal, getRecommendation } from '@/lib/scoring'
 import { ASSET_LABELS, STAGE_LABELS, type AssetTag, type EventType, type Opportunity, type Stage } from '@/lib/types'
-import { normalizeUrl } from '@/lib/url'
+import { searchUrl } from '@/lib/url'
 
 const REC_STYLE: Record<string, { bg: string; color: string }> = {
   Pursue: { bg: '#fdb528', color: '#0a3354' },
@@ -198,17 +198,17 @@ export default function OpportunitiesTable({ opps, onOpenProfile, onDelete, onMo
                     </td>
                     <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                       <div className="flex gap-1">
-                        {opp.url && (
-                          <a
-                            href={normalizeUrl(opp.url)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs px-2 py-1 rounded hover:opacity-80"
-                            style={{ backgroundColor: '#e0f2fe', color: '#0369a1' }}
-                          >
-                            ↗
-                          </a>
-                        )}
+                        <a
+                          href={searchUrl(opp.event_name, opp.governing_body)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Search Google"
+                          className="text-xs px-2 py-1 rounded hover:opacity-80"
+                          style={{ backgroundColor: '#e0f2fe', color: '#0369a1' }}
+                          onClick={e => e.stopPropagation()}
+                        >
+                          ↗
+                        </a>
                         <button
                           onClick={() => { if (confirm(`Delete "${opp.event_name}"?`)) onDelete(opp.id) }}
                           className="text-xs px-2 py-1 rounded hover:opacity-80"

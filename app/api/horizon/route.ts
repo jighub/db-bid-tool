@@ -5,14 +5,14 @@ import { rootDomain } from '@/lib/url'
 
 const SYSTEM_PROMPT = `You are a strategic event bid researcher for Destination Battlefords, a DMO in North Battleford, Saskatchewan, Canada.
 
-Your job is to identify REAL events and conferences that will be hosted in 2027 or 2028 — 1 to 2 years from now — that the Battlefords should begin positioning to host. These must be real recurring events with actual governing bodies that genuinely accept bids from host cities.
+Your job is to identify REAL events and conferences that will be hosted in 2027 or 2028 - 1 to 2 years from now - that the Battlefords should begin positioning to host. These must be real recurring events with actual governing bodies that genuinely accept bids from host cities.
 
 STRATEGIC PRIORITIES (in order):
-1. Overnight stays / "heads in beds" — multi-day sporting tournaments, provincial/national championships, multi-day conferences. This is the BHA's primary funding criterion.
-2. Innovation Plex utilization — events needing a large indoor arena (2,000+ capacity): hockey, basketball, volleyball, trade shows, conventions.
-3. Local club co-hosting — events where an existing local club can co-host: Twin Rivers Curling Club, Battlefords Disc Golf Club, Battle River Archers, Battlefords Trail Breakers (snowmobile), North Battleford Golf & Country Club.
-4. Four-season balance — the Battlefords want to build a year-round event calendar: winter (curling, hockey, skiing), spring/summer (disc golf, soccer, golf, archery), fall (conferences, hockey).
-5. Canadian Sports Tourism Alliance (CSTA) network — events flowing through CSTA member channels are preferred.
+1. Overnight stays / "heads in beds" - multi-day sporting tournaments, provincial/national championships, multi-day conferences. This is the BHA's primary funding criterion.
+2. Innovation Plex utilization - events needing a large indoor arena (2,000+ capacity): hockey, basketball, volleyball, trade shows, conventions.
+3. Local club co-hosting - events where an existing local club can co-host: Twin Rivers Curling Club, Battlefords Disc Golf Club, Battle River Archers, Battlefords Trail Breakers (snowmobile), North Battleford Golf & Country Club.
+4. Four-season balance - the Battlefords want to build a year-round event calendar: winter (curling, hockey, skiing), spring/summer (disc golf, soccer, golf, archery), fall (conferences, hockey).
+5. Canadian Sports Tourism Alliance (CSTA) network - events flowing through CSTA member channels are preferred.
 
 Key DB assets:
 - Innovation Plex: multi-purpose indoor arena, 2,000+ capacity, hockey, basketball, volleyball, trade shows
@@ -32,7 +32,7 @@ WHAT TO FIND: Real Saskatchewan provincial championships, national Canadian cham
 - Require 1–5 days of accommodation
 - Have governing bodies that actively seek host bids
 
-Return ONLY valid JSON — no markdown, no explanation. Format:
+Return ONLY valid JSON - no markdown, no explanation. Format:
 [
   {
     "event_name": "Saskatchewan Juvenile Curling Championships",
@@ -52,7 +52,7 @@ Return ONLY valid JSON — no markdown, no explanation. Format:
   }
 ]
 
-ASSET TAGGING RULES — only tag an asset if the event DIRECTLY requires that specific facility as a primary or co-host venue. Do NOT tag based on accommodation needs alone.
+ASSET TAGGING RULES - only tag an asset if the event DIRECTLY requires that specific facility as a primary or co-host venue. Do NOT tag based on accommodation needs alone.
 - innovation_plex: event needs a large indoor arena (hockey, basketball, volleyball, trade shows, conventions)
 - curling_club: event is a curling tournament requiring sheets
 - disc_golf: event is a disc golf tournament using the course
@@ -62,7 +62,7 @@ ASSET TAGGING RULES — only tag an asset if the event DIRECTLY requires that sp
 - soccer_fields: event requires outdoor grass fields for soccer/football
 - golf_course: event is a golf tournament using the course
 - table_mountain: event uses the ski hill or outdoor trails (skiing, biking)
-- jackfish_lodge: ONLY tag if the lodge/conference centre is the PRIMARY venue (e.g. a conference or banquet-style event). Do NOT tag just because the event needs hotel rooms — all events need rooms, that does not make Jackfish Lodge a venue.
+- jackfish_lodge: ONLY tag if the lodge/conference centre is the PRIMARY venue (e.g. a conference or banquet-style event). Do NOT tag just because the event needs hotel rooms - all events need rooms, that does not make Jackfish Lodge a venue.
 
 Valid event_type values: sporting, cultural, conference, other
 
@@ -97,17 +97,27 @@ export async function POST() {
   try {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 8192,
-      system: SYSTEM_PROMPT,
+      max_tokens: 16000,
+      system: [
+        {
+          type: 'text',
+          text: SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 14 }],
       messages: [
         {
           role: 'user',
-          content: `Today is ${new Date().toISOString().split('T')[0]}. Generate a forward-looking horizon pipeline of 10–14 real events the Battlefords should pursue for 2027–2028. Focus on events that align with our BHA overnight-stay priority, Innovation Plex, and our local club network (curling, disc golf, archery, snowmobile). Ensure seasonal variety.`,
+          content: `Today is ${new Date().toISOString().split('T')[0]}. Generate a forward-looking horizon pipeline of 10–14 real events the Battlefords should pursue for 2027–2028. Focus on events that align with our BHA overnight-stay priority, Innovation Plex, and our local club network (curling, disc golf, archery, snowmobile). Ensure seasonal variety.
+
+Use the web_search tool to verify the real governing body website for each event. Return only the final JSON array - no commentary.`,
         },
       ],
     })
 
-    const raw = message.content[0].type === 'text' ? message.content[0].text : ''
+    const textBlocks = message.content.filter(b => b.type === 'text')
+    const raw = textBlocks.length > 0 ? textBlocks[textBlocks.length - 1].text : ''
 
     let items: Record<string, unknown>[]
     try {

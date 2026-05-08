@@ -100,7 +100,7 @@ export default function ScorePanel({ opp, onClose, onSave }: Props) {
                 <p className="text-xs text-slate-400 mt-0.5">
                   {opp.bid_deadline
                     ? `Bid deadline: ${new Date(opp.bid_deadline).toLocaleDateString('en-CA')}`
-                    : 'No deadline set — defaulting to 5 pts'}
+                    : 'No deadline set - defaulting to 5 pts'}
                 </p>
               </div>
               <span className="text-sm font-bold text-slate-600">{leadTime} / 10</span>

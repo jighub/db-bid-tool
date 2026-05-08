@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { ASSET_LABELS, type AssetTag, type HorizonItem } from '@/lib/types'
-import { normalizeUrl } from '@/lib/url'
+import { searchUrl } from '@/lib/url'
 
 const PRIORITY_BADGE: { key: keyof HorizonItem; label: string; bg: string; color: string }[] = [
   { key: 'bha_overnight_priority', label: 'Overnight Stay', bg: '#fef9c3', color: '#92400e' },
@@ -73,7 +73,7 @@ export default function HorizonView({ onAddToPipeline }: Props) {
         setScanStatus(`Found ${data.items_found} opportunities`)
         await fetchItems()
       } else {
-        setScanStatus('Scan failed — try again')
+        setScanStatus('Scan failed - try again')
       }
       setScanning(false)
       setTimeout(() => setScanStatus(''), 6000)
@@ -84,7 +84,7 @@ export default function HorizonView({ onAddToPipeline }: Props) {
         clearInterval(pollRef.current)
         pollRef.current = null
         setScanning(false)
-        setScanStatus('Scan is taking longer than expected — refresh to check results')
+        setScanStatus('Scan is taking longer than expected - refresh to check results')
         setTimeout(() => setScanStatus(''), 8000)
       }
     }, 90000)
@@ -208,7 +208,7 @@ export default function HorizonView({ onAddToPipeline }: Props) {
               {onTheRadar.length}
             </span>
           </div>
-          <p className="text-xs text-slate-400 mb-4">Watch these. No action needed yet — outreach is more than 90 days away.</p>
+          <p className="text-xs text-slate-400 mb-4">Watch these. No action needed yet - outreach is more than 90 days away.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {onTheRadar.map(item => (
               <HorizonCard
@@ -329,13 +329,11 @@ function HorizonCard({
       )}
 
       <div className="flex gap-2 flex-wrap pt-1 border-t border-slate-100">
-        {item.governing_body_website && (
-          <a href={normalizeUrl(item.governing_body_website)} target="_blank" rel="noopener noreferrer"
-            className="text-xs px-2 py-1 rounded hover:opacity-80 transition-opacity"
-            style={{ backgroundColor: '#f1f5f9', color: '#0a3354' }}>
-            Website ↗
-          </a>
-        )}
+        <a href={searchUrl(item.event_name, item.governing_body)} target="_blank" rel="noopener noreferrer"
+          className="text-xs px-2 py-1 rounded hover:opacity-80 transition-opacity"
+          style={{ backgroundColor: '#f1f5f9', color: '#0a3354' }}>
+          Search ↗
+        </a>
         <button onClick={handleCopy}
           className="text-xs px-2 py-1 rounded hover:opacity-80 transition-opacity"
           style={{ backgroundColor: '#f1f5f9', color: '#475569' }}>

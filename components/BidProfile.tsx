@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { ASSET_LABELS, STAGE_LABELS, type AssetTag, type BidDocument, type EventType, type Opportunity, type Scores, type Stage } from '@/lib/types'
 import { calcLeadTime, calcTotal, getRecommendation, SCORE_LABELS, SCORE_MAX } from '@/lib/scoring'
-import { normalizeUrl } from '@/lib/url'
+import { normalizeUrl, searchUrl } from '@/lib/url'
 
 const STAGES: Stage[] = ['prospecting', 'in-progress', 'submitted', 'won', 'lost']
 const ASSETS = Object.keys(ASSET_LABELS) as AssetTag[]
@@ -151,7 +151,7 @@ export default function BidProfile({ opp, onClose, onSave, onDelete, onMoveStage
             </div>
           </div>
 
-          {/* Stage selector — always interactive */}
+          {/* Stage selector - always interactive */}
           <div className="flex gap-1 mt-3 flex-wrap">
             {STAGES.map(s => (
               <button
@@ -224,7 +224,7 @@ export default function BidProfile({ opp, onClose, onSave, onDelete, onMoveStage
             <EditStrategy form={form} update={update} />
           )}
 
-          {/* SCORE — sliders always interactive */}
+          {/* SCORE - sliders always interactive */}
           {section === 'score' && (
             <>
               <div
@@ -381,17 +381,15 @@ function ViewOverview({ form }: { form: Opportunity }) {
         <ViewField label="Indoor Capacity" value={form.indoor_capacity_needed?.toLocaleString() ?? null} />
         <ViewField label="Rooms Needed" value={form.accommodation_rooms_needed?.toString() ?? null} />
         <ViewField label="Outreach By" value={form.outreach_by ? new Date(form.outreach_by).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' }) : null} />
-        {form.url && (
-          <div className="grid grid-cols-3 gap-2 items-start">
-            <dt className="text-xs font-semibold text-slate-500 col-span-1 pt-0.5">Website</dt>
-            <dd className="col-span-2">
-              <a href={normalizeUrl(form.url)} target="_blank" rel="noopener noreferrer"
-                className="text-xs text-[#0a3354] hover:underline font-medium break-all">
-                {form.url.replace(/^https?:\/\//i, '')} ↗
-              </a>
-            </dd>
-          </div>
-        )}
+        <div className="grid grid-cols-3 gap-2 items-start">
+          <dt className="text-xs font-semibold text-slate-500 col-span-1 pt-0.5">Search</dt>
+          <dd className="col-span-2">
+            <a href={searchUrl(form.event_name, form.governing_body)} target="_blank" rel="noopener noreferrer"
+              className="text-xs text-[#0a3354] hover:underline font-medium break-all">
+              Find on Google ↗
+            </a>
+          </dd>
+        </div>
       </dl>
 
       {form.notes && (
@@ -429,7 +427,7 @@ function ViewOverview({ form }: { form: Opportunity }) {
 
       {!form.url && !form.notes && activeFlags.length === 0 && form.assets.length === 0
         && !form.typical_attendance && !form.bid_deadline && !form.event_start && !form.indoor_capacity_needed && (
-        <p className="text-xs text-slate-400 text-center py-4">No details yet — click Edit to fill them in.</p>
+        <p className="text-xs text-slate-400 text-center py-4">No details yet - click Edit to fill them in.</p>
       )}
     </>
   )
@@ -437,7 +435,7 @@ function ViewOverview({ form }: { form: Opportunity }) {
 
 function ViewStrategy({ form }: { form: Opportunity }) {
   if (!form.strategic_fit && !form.key_requirements) {
-    return <p className="text-xs text-slate-400 text-center py-4">No strategy notes yet — click Edit to add them.</p>
+    return <p className="text-xs text-slate-400 text-center py-4">No strategy notes yet - click Edit to add them.</p>
   }
   return (
     <>
@@ -568,7 +566,7 @@ function EditStrategy({ form, update }: {
     <>
       <div>
         <label className="block text-xs font-semibold text-slate-600 mb-1">Why Destination Battlefords</label>
-        <p className="text-xs text-slate-400 mb-1.5">Strategic fit — why this event belongs in the Battlefords.</p>
+        <p className="text-xs text-slate-400 mb-1.5">Strategic fit - why this event belongs in the Battlefords.</p>
         <textarea value={form.strategic_fit ?? ''} onChange={e => update('strategic_fit', e.target.value || null)}
           rows={5} placeholder="e.g. Multi-day curling tournament drives overnight stays. Twin Rivers Curling Club is an ideal co-host…"
           className="w-full text-sm px-3 py-2 rounded border border-slate-200 text-slate-700 resize-none" />

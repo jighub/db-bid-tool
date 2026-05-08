@@ -23,7 +23,7 @@ Funder priorities:
 
 You will return a JSON array of 8–12 event bid opportunities that the Battlefords should seriously consider pursuing. Each must be a REAL category of event with a real governing body. Focus on provincial (Saskatchewan), national Canadian, and regional western Canadian events.
 
-Return ONLY valid JSON — no markdown, no explanation. Format:
+Return ONLY valid JSON - no markdown, no explanation. Format:
 [
   {
     "event_name": "Saskatchewan Senior Curling Championships",
@@ -51,7 +51,7 @@ Return ONLY valid JSON — no markdown, no explanation. Format:
   }
 ]
 
-ASSET TAGGING RULES — only tag an asset if the event DIRECTLY requires that specific facility as a primary or co-host venue. Do NOT tag based on accommodation needs alone.
+ASSET TAGGING RULES - only tag an asset if the event DIRECTLY requires that specific facility as a primary or co-host venue. Do NOT tag based on accommodation needs alone.
 - innovation_plex: event needs a large indoor arena (hockey, basketball, volleyball, trade shows, conventions)
 - curling_club: event is a curling tournament requiring sheets
 - disc_golf: event is a disc golf tournament using the course
@@ -61,7 +61,7 @@ ASSET TAGGING RULES — only tag an asset if the event DIRECTLY requires that sp
 - soccer_fields: event requires outdoor grass fields for soccer/football
 - golf_course: event is a golf tournament using the course
 - table_mountain: event uses the ski hill or outdoor trails (skiing, biking)
-- jackfish_lodge: ONLY tag if the lodge/conference centre is the PRIMARY venue (e.g. a conference or banquet-style event). Do NOT tag just because the event needs hotel rooms — all events need rooms, that does not make Jackfish Lodge a venue.
+- jackfish_lodge: ONLY tag if the lodge/conference centre is the PRIMARY venue (e.g. a conference or banquet-style event). Do NOT tag just because the event needs hotel rooms - all events need rooms, that does not make Jackfish Lodge a venue.
 
 Valid event_type values: sporting, cultural, conference, other`
 
@@ -95,17 +95,29 @@ export async function POST() {
   try {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4096,
-      system: SYSTEM_PROMPT,
+      max_tokens: 16000,
+      system: [
+        {
+          type: 'text',
+          text: SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 12 }],
       messages: [
         {
           role: 'user',
-          content: `Generate a fresh list of 8–12 event bid opportunities for Destination Battlefords. Focus on events that would drive overnight hotel stays and make use of the Innovation Plex, curling club, disc golf, or Table Mountain. Today is ${new Date().toISOString().split('T')[0]}.`,
+          content: `Generate a fresh list of 8–12 event bid opportunities for Destination Battlefords. Focus on events that would drive overnight hotel stays and make use of the Innovation Plex, curling club, disc golf, or Table Mountain. Today is ${new Date().toISOString().split('T')[0]}.
+
+Use the web_search tool to verify the real governing body website for each event. Return only the final JSON array - no commentary.`,
         },
       ],
     })
 
-    const raw = message.content[0].type === 'text' ? message.content[0].text : ''
+    // With server-side tools, content is interleaved (text + server_tool_use +
+    // web_search_tool_result). The final JSON lives in the LAST text block.
+    const textBlocks = message.content.filter(b => b.type === 'text')
+    const raw = textBlocks.length > 0 ? textBlocks[textBlocks.length - 1].text : ''
 
     let opportunities: Record<string, unknown>[]
     try {

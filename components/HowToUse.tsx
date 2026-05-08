@@ -11,27 +11,27 @@ const SECTIONS = [
   },
   {
     title: 'Pipeline tab',
-    content: `The Pipeline tab shows your active bids in two views:\n\n• Board — a kanban-style column view organised by stage (Prospecting → In Progress → Submitted → Won/Lost). Click any card to open the full bid profile.\n\n• List — a filterable table of all bids. Click a row to open the profile. Use the stage dropdown inline to move a bid without opening it.`,
+    content: `The Pipeline tab shows your active bids in two views:\n\n• Board - a kanban-style column view organised by stage (Prospecting → In Progress → Submitted → Won/Lost). Click any card to open the full bid profile.\n\n• List - a filterable table of all bids. Click a row to open the profile. Use the stage dropdown inline to move a bid without opening it.`,
   },
   {
     title: 'Bid Profile',
-    content: `Clicking a bid card opens the Bid Profile panel on the right. It has four sections:\n\n• Overview — core event details, priority flags, and venue/asset tags.\n• Strategy — why this event is a good fit for DB, and key hosting requirements.\n• Score — adjust the five scoring criteria. Lead time is calculated automatically from the bid deadline.\n• Documents — add links to RFPs, supporting files, or bid submissions.\n\nEdits are only saved when you click "Save Changes".`,
+    content: `Clicking a bid card opens the Bid Profile panel on the right. It has four sections:\n\n• Overview - core event details, priority flags, and venue/asset tags.\n• Strategy - why this event is a good fit for DB, and key hosting requirements.\n• Score - adjust the five scoring criteria. Lead time is calculated automatically from the bid deadline.\n• Documents - add links to RFPs, supporting files, or bid submissions.\n\nEdits are only saved when you click "Save Changes".`,
   },
   {
     title: 'Scoring and recommendations',
-    content: `Each bid is scored out of 100 across five criteria:\n\n• Overnight Stay (25 pts) — multi-day events that drive room nights.\n• Local Alignment (20 pts) — fits DB's strategic priorities and existing clubs.\n• Venue Fit (20 pts) — matches available venues and capacities.\n• Economic Impact (15 pts) — estimated spend and spinoff.\n• Competitiveness (10 pts) — realistic chance of winning.\n• Lead Time (10 pts) — auto-calculated from bid deadline.\n\nRecommendations: Pursue ≥70, Consider 45–69, Pass <45.`,
+    content: `Each bid is scored out of 100 across five criteria:\n\n• Overnight Stay (25 pts) - multi-day events that drive room nights.\n• Local Alignment (20 pts) - fits DB's strategic priorities and existing clubs.\n• Venue Fit (20 pts) - matches available venues and capacities.\n• Economic Impact (15 pts) - estimated spend and spinoff.\n• Competitiveness (10 pts) - realistic chance of winning.\n• Lead Time (10 pts) - auto-calculated from bid deadline.\n\nRecommendations: Pursue ≥70, Consider 45–69, Pass <45.`,
   },
   {
     title: 'Horizon tab',
-    content: `The Horizon tab shows 1–2 year forward-looking opportunities. Click "Scan for Opportunities" to have AI identify real events that DB should start positioning for.\n\n• For Review — outreach is due within 90 days. These need attention now.\n• On the Radar — more than 90 days out. Monitor and wait.\n\nUse "→ Push to Prospects" to move a horizon item into the Pipeline as a Prospecting bid.`,
+    content: `The Horizon tab shows 1–2 year forward-looking opportunities. Click "Scan for Opportunities" to have AI identify real events that DB should start positioning for.\n\n• For Review - outreach is due within 90 days. These need attention now.\n• On the Radar - more than 90 days out. Monitor and wait.\n\nUse "→ Push to Prospects" to move a horizon item into the Pipeline as a Prospecting bid.`,
   },
   {
     title: 'Adding bids manually',
-    content: `Click "+ Add" in the top-right of the nav bar to add a bid manually. You can fill in as much or as little detail as you have — everything can be edited later via the Bid Profile.`,
+    content: `Click "+ Add" in the top-right of the nav bar to add a bid manually. You can fill in as much or as little detail as you have - everything can be edited later via the Bid Profile.`,
   },
   {
     title: 'Refresh (AI Discovery)',
-    content: `On the Pipeline tab, the "Refresh" button asks AI to scan for new bid opportunities based on DB's strategic priorities. New bids are added directly to Prospecting. This is separate from the Horizon scan — Refresh finds near-term opportunities, Horizon finds 1–2 year forward-looking ones.`,
+    content: `On the Pipeline tab, the "Refresh" button asks AI to scan for new bid opportunities based on DB's strategic priorities. New bids are added directly to Prospecting. This is separate from the Horizon scan - Refresh finds near-term opportunities, Horizon finds 1–2 year forward-looking ones.`,
   },
 ]
 

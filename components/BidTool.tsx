@@ -14,7 +14,7 @@ type Tab = 'pipeline' | 'horizon'
 type PipelineView2 = 'board' | 'list'
 
 const NAV_TOOLTIPS: Record<Tab, string> = {
-  pipeline: 'Your active bids organised by stage — from first look through to won or lost.',
+  pipeline: 'Your active bids organised by stage - from first look through to won or lost.',
   horizon: 'Future events 1–2 years out. "For Review" means it\'s time to reach out. "On the Radar" means watch and wait.',
 }
 
@@ -55,7 +55,7 @@ export default function BidTool({ initialOpportunities }: Props) {
         setRefreshStatus(json.error ?? 'Refresh failed')
       }
     } catch {
-      setRefreshStatus('Network error — try again')
+      setRefreshStatus('Network error - try again')
     } finally {
       setRefreshing(false)
       setTimeout(() => setRefreshStatus(''), 6000)

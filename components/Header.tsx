@@ -15,7 +15,7 @@ export default function Header() {
               href="https://www.battlefords.ca"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Destination Battlefords — back to main site"
+              aria-label="Destination Battlefords - back to main site"
               className="shrink-0"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}

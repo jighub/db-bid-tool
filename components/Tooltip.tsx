@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 interface Props {
   text: string
@@ -9,28 +10,58 @@ interface Props {
   direction?: 'up' | 'down'
 }
 
+const widthToPx: Record<string, number> = {
+  'w-52': 208,
+  'w-56': 224,
+  'w-64': 256,
+}
+
 export default function Tooltip({ text, children, width = 'w-52', direction = 'up' }: Props) {
   const [show, setShow] = useState(false)
+  const [coords, setCoords] = useState<{ top: number; left: number } | null>(null)
+  const triggerRef = useRef<HTMLSpanElement>(null)
 
   const isDown = direction === 'down'
+  const popupWidth = widthToPx[width] ?? 208
+
+  useLayoutEffect(() => {
+    if (!show || !triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const margin = 8
+    let left = centerX - popupWidth / 2
+    left = Math.max(margin, Math.min(left, window.innerWidth - popupWidth - margin))
+    const top = isDown ? rect.bottom + 8 : rect.top - 8
+    setCoords({ top, left })
+  }, [show, isDown, popupWidth])
 
   return (
-    <span
-      className="relative inline-flex items-center"
-      onMouseEnter={() => setShow(true)}
-      onMouseLeave={() => setShow(false)}
-      onClick={e => e.stopPropagation()}
-    >
-      {children}
-      {show && (
-        <span
-          className={`absolute ${isDown ? 'top-full mt-2' : 'bottom-full mb-2'} left-1/2 -translate-x-1/2 ${width} text-xs bg-slate-800 text-white rounded-lg px-3 py-2 z-50 shadow-lg text-center pointer-events-none leading-relaxed`}
-        >
-          {text}
-          <span className={`absolute ${isDown ? 'bottom-full border-b-slate-800 border-t-transparent' : 'top-full border-t-slate-800 border-b-transparent'} left-1/2 -translate-x-1/2 border-4 border-l-transparent border-r-transparent`} />
-        </span>
-      )}
-    </span>
+    <>
+      <span
+        ref={triggerRef}
+        className="relative inline-flex items-center"
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onClick={e => e.stopPropagation()}
+      >
+        {children}
+      </span>
+      {show && coords && typeof document !== 'undefined' &&
+        createPortal(
+          <span
+            className={`fixed ${width} text-xs bg-slate-800 text-white rounded-lg px-3 py-2 z-[9999] shadow-lg text-center pointer-events-none leading-relaxed whitespace-normal block`}
+            style={{
+              top: coords.top,
+              left: coords.left,
+              transform: isDown ? 'none' : 'translateY(-100%)',
+            }}
+          >
+            {text}
+          </span>,
+          document.body
+        )
+      }
+    </>
   )
 }
 
